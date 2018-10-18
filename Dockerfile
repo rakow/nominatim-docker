@@ -1,6 +1,6 @@
 # -*-dockerfile-*-
 
-FROM phusion/baseimage:latest@sha256:29479c37fcb28089eddd6619deed43bcdbcccf2185369e0199cc51a5ec78991b
+FROM phusion/baseimage:0.11
 
 # Use bash
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
@@ -20,7 +20,7 @@ RUN update-locale LANG=en_US.UTF-8
 # Add postgresql sources
 USER root
 RUN apt-get install -y --no-install-recommends wget
-RUN echo "deb http://apt.postgresql.org/pub/repos/apt xenial-pgdg main" >> \
+RUN echo "deb http://apt.postgresql.org/pub/repos/apt bionic-pgdg main" >> \
       /etc/apt/sources.list && \
     wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | \
       apt-key add -
@@ -110,7 +110,7 @@ RUN curl -L ${PBF_URL} --create-dirs -o /srv/nominatim/src/data.osm.pbf
 
 # Filter administrative boundaries
 USER nominatim
-ARG BUILD_THREADS=16
+ARG BUILD_THREADS=8
 ARG IMPORT_ADMINISTRATIVE=false
 COPY scripts/filter_administrative.sh \
       /srv/nominatim/scripts/filter_administrative.sh
@@ -125,7 +125,7 @@ RUN service postgresql start && \
 
 # Tune postgresql configuration for import
 USER root
-ARG BUILD_MEMORY=32GB
+ARG BUILD_MEMORY=16GB
 ENV PGCONFIG_URL https://api.pgconfig.org/v1/tuning/get-config
 RUN IMPORT_CONFIG_URL="${PGCONFIG_URL}? \
       format=alter_system& \
