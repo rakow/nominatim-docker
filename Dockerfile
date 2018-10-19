@@ -81,6 +81,7 @@ RUN chmod a+x ${USERHOME}
 # Install Nominatim
 USER nominatim
 ARG REPLICATION_URL=https://planet.osm.org/replication/hour/
+ARG BASE_URL=/nominatim/
 WORKDIR /srv/nominatim
 RUN git clone --recursive git://github.com/openstreetmap/Nominatim.git
 RUN echo $'<?php\n\
@@ -90,7 +91,7 @@ RUN echo $'<?php\n\
       @define('CONST_Osm2pgsql_Flatnode_File', '/srv/nominatim/flatnode'); \n\
       @define('CONST_Pyosmium_Binary', '/usr/local/bin/pyosmium-get-changes'); \n\
       # Website settings
-      @define('CONST_Website_BaseURL', '/nominatim/'); \n\
+      @define('CONST_Website_BaseURL', '${BASE_URL}'); \n\
       @define('CONST_Replication_Url', '${REPLICATION_URL}'); \n\
       @define('CONST_Replication_MaxInterval', '86400'); \n\
       @define('CONST_Replication_Update_Interval', '86400'); \n\
@@ -102,6 +103,8 @@ RUN mkdir ${USERHOME}/Nominatim/build && \
     cd ${USERHOME}/Nominatim/build && \
     cmake ${USERHOME}/Nominatim && \
     make
+
+RUN sed -i "/CONST_Website_BaseURL/c\@define('CONST_Website_BaseURL', '${BASE_URL}');" settings/defaults.php
 
 # Download data for initial import
 USER nominatim
