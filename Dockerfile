@@ -105,6 +105,7 @@ RUN mkdir ${USERHOME}/Nominatim/build && \
     make
 
 RUN sed -i "/CONST_Website_BaseURL/c\@define('CONST_Website_BaseURL', '${BASE_URL}');" Nominatim/settings/defaults.php
+RUN sed -i "/CONST_Website_BaseURL/c\@define('CONST_Website_BaseURL', '${BASE_URL}');" Nominatim/build/settings/defaults.php
 
 # Download data for initial import
 USER nominatim
@@ -179,7 +180,9 @@ RUN IMPORT_CONFIG_URL="${PGCONFIG_URL}? \
 
 # Configure Apache
 USER root
-COPY nominatim.conf /etc/apache2/conf-available/nominatim.conf
+
+COPY nominatim.conf /etc/apache2/sites-enabled/000-default.conf
+
 RUN a2enconf nominatim
 
 # Clean up
