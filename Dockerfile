@@ -182,15 +182,15 @@ RUN IMPORT_CONFIG_URL="${PGCONFIG_URL}? \
 USER root
 
 COPY nominatim.conf /etc/apache2/sites-enabled/000-default.conf
-
-RUN a2enconf nominatim
+#RUN a2enconf nominatim
 
 # Clean up
 USER root
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Expose ports
-EXPOSE 8080
+EXPOSE 80
+EXPOSE 443
 
 # Init scripts
 USER root
